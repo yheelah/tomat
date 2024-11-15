@@ -4,9 +4,8 @@ from fake_useragent import FakeUserAgent
 from time import sleep, time
 from urllib.parse import parse_qs, unquote
 import json
-import pytz
 import random
-from curl_cffi import requests
+import requests
 
 def print_timestamp(message):
     now = datetime.now().isoformat(" ").split(".")[0]
@@ -261,6 +260,7 @@ class Tomarket:
             response.raise_for_status()
             response_json = response.json()
             data = response_json.get('data')
+            special = data.get('special',[])
             standard = data.get('standard', [])
             expire = data.get('expire', [])
             default = data.get('default', [])
@@ -280,6 +280,9 @@ class Tomarket:
                         self.claim_tasks(token=token, task_id=task['taskId'])
                         sleep(2)
             
+            for task in special:
+                self.clear_task(query, token, task)
+
             for task in free_tomato:
                 self.clear_task(query, token, task)
 
@@ -449,10 +452,13 @@ class Tomarket:
                     nextRank = dat.get('nextRank')
                     unusedStars = dat.get('unusedStars')
                     print_timestamp(f"[ Rank : {currentRank.get('name')} | Level : {currentRank.get('level')} | Stars: {unusedStars} ]")
+                    stars = currentRank.get('stars')
+                    ranges  = currentRank.get('range')
+                    butuh = ranges-stars
                     minStar = nextRank.get('minStar',0)
                     range = nextRank.get('range', 0)
                     if selector == '1':
-                        if unusedStars >= range:
+                        if unusedStars >= butuh:
                             print_timestamp('[ Upgraded Rank... ]')
                             sleep(2)
                             payload = {'stars': unusedStars}
@@ -506,6 +512,7 @@ class Tomarket:
         self.headers.update({
             'Authorization': token
         })
+        
         response = requests.post(url=url, headers=self.headers, json=payload)
         data = self.response_data(response)
         if data is not None:
@@ -539,6 +546,63 @@ class Tomarket:
         response = requests.get(url)
         data = self.response_data(response)
         return data
+
+    def checked(self, token, query):
+        self.headers.update({
+            'Authorization': token
+        })
+        payload = {"language_code":"en","init_data":query,"round":"Two"}
+        url = 'https://api-web.tomarket.ai/tomarket-game/v1/token/check'
+        response = requests.post(url=url, headers=self.headers, json=payload)
+        data = self.response_data(response)
+        if data is not None:
+            status = data.get('status')
+            if status == 0:
+                datas = data.get('data',{})
+                tomaAirDrop = datas.get('tomaAirDrop')
+                amount = tomaAirDrop.get('amount')
+                claimed = datas.get('claimed')
+                if claimed:
+                    print_timestamp(f"Claimed Done, Reward {amount} $TOMA")
+                else:
+                    self.toma_claim(token=token)
+    
+    def check_elig(self, token, query):
+        self.headers.update({
+            'Authorization': token
+        })
+        payload = {"language_code":"en","init_data":query,"round":"One"}
+        url = 'https://api-web.tomarket.ai/tomarket-game/v1/token/check'
+        response = requests.post(url=url, headers=self.headers, json=payload)
+        data = self.response_data(response)
+        if data is not None:
+            status = data.get('status')
+            if status == 0:
+                datas = data.get('data', {})
+                tomaAirDrop = datas.get('tomaAirDrop', {})
+                rank = datas.get('rank', 'Not Found')
+                amount = tomaAirDrop.get('amount', 0)
+
+                print_timestamp(f"tomaAirDrop Amount:{amount}")
+                print_timestamp(f"Rank: {rank}")
+    
+    def airdrop_task(self, token, query):
+        url = 'https://api-web.tomarket.ai/tomarket-game/v1/token/airdropTasks'
+
+    def toma_claim(self, token):
+        url = 'https://api-web.tomarket.ai/tomarket-game/v1/token/claim'
+        self.headers.update({
+            'Authorization': token
+        })
+        payload = {"round":"Two"}
+        response = requests.post(url=url, headers=self.headers, json=payload)
+        data = self.response_data(response)
+        if data is not None:
+            status = data.get('status')
+            if status == 0:
+                datas = data.get('data',{})
+                tomarketReward = datas.get('tomarketReward')
+                print_timestamp(f"{tomarketReward} $TOMA claimed done")
 
     def puzzle_task(self, token, query):
         url = 'https://api-web.tomarket.ai/tomarket-game/v1/tasks/puzzle'
@@ -602,4 +666,3 @@ class Tomarket:
             if key == id:
                 return value
         return None
-
