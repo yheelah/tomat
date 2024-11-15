@@ -1,0 +1,19 @@
+{
+    "interval": 1,
+    "play_game": false,
+    "complete_task": true,
+    "use_free_spin": true,
+    "unlock_levels": false,
+    "upgrade_max_level": false,
+    "share_tg_after_upgrade": false,
+    "connect_wallet": false,
+    "game_point": {
+        "low": 100,
+        "high": 150
+    },
+
+    "additional_time": {
+        "min": 60,
+        "max": 120
+    }
+}

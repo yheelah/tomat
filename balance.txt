@@ -1,0 +1,3 @@
+Time / num_acc / Name / Balance / rank / Result_connect_wallet / Avatar_task / Wallet
+2024-10-29 19:14 / 1 / Елена / 1094171 / Silver II / Successfully connected wallet! / Done / UQAt8ePz1DA_E_ksEC5rng6fhNkchzW5N1PSu_GO7cFOihhO
+2024-10-29 19:14 / total_balance: / 1094171 
