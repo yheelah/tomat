@@ -61,14 +61,14 @@ def main():
     auto_task = input("auto clear task y/n  : ").strip().lower()
     auto_game = input("auto play game  y/n  : ").strip().lower()
     auto_combo = input("auto claim combo puzzle y/n : ").strip().lower()
+    auto_convert = input("auto convert star y/n : ").strip().lower()
     random_number = input("set random score in game 300-500  y/n  : ").strip().lower()
     free_raffle = input("enable free raffle  y/n  : ").strip().lower()
-    selector_weekly = input("auto claim $TOMA weekly y/n : ").strip().lower()
     used_stars = input("use star for : 1. upgrade rank | 2.auto spin | n.(skip all) (1/2/n): ").strip().lower()
     while True:
         queries = load_credentials()
         sum = len(queries)
-        delay = int(3 * random.randint(3700, 3750))
+        delay = int(6 * random.randint(3700, 3750))
         # generate_token()
         start_time = time.time()
                 
@@ -91,8 +91,6 @@ def main():
             time.sleep(2)
             if free_raffle == "y":
                 tom.free_spin(token=token, query=query)
-            if selector_weekly == "y":
-                tom.checked(token=token, query=query)
             time.sleep(2)
         
         if auto_task == 'y':
@@ -125,7 +123,7 @@ def main():
                 if token == None:
                     token = tom.user_login(query)
                 print_timestamp(f"{Fore.CYAN + Style.BRIGHT}[ Account {index+1}/{sum} {user.get('username','')} ]{Style.RESET_ALL}")
-                tom.user_balance(token=token, random_number=random_number)
+                tom.user_balance(token=token, random_number=random_number, auto_convert=auto_convert)
                 time.sleep(2)
 
         
@@ -143,6 +141,7 @@ def check_elig():
     tom = Tomarket()
     queries = load_credentials()
     sum = len(queries)
+    selector_weekly = input("auto claim $TOMA weekly y/n : ").strip().lower()
     for index, query in enumerate(queries):
         parse = parse_query(query)
         user = parse.get('user')
@@ -156,6 +155,11 @@ def check_elig():
             print_timestamp("Generate Token Done!")
         time.sleep(3)
         tom.check_elig(token, query)
+        time.sleep(2)
+        tom.airdrop_task(token, query)
+        time.sleep(2)
+        if selector_weekly == "y":
+            tom.checked(token=token, query=query)
 
 def start():
     print(r"""
@@ -166,7 +170,7 @@ def start():
         select this one :
         1. claim daily
         2. generate token
-        3. check eligibility
+        3. check eligibility & claim season reward
           """)
     selector = input("Select the one  : ").strip().lower()
 
