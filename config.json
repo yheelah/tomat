@@ -1,6 +1,6 @@
 {
     "interval": 1,
-    "play_game": true,
+    "play_game": false,
     "complete_task": true,
     "use_free_spin": true,
     "unlock_levels": true,
