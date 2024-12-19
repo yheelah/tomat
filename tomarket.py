@@ -653,7 +653,7 @@ class Tomarket:
                     self.toma_claim(token, "One")
     
     def airdrop_task(self, token, query):
-        url = 'https://api-web.tomarket.ai/tomarket-game/v1/token/airdropTasks'
+        url = 'https://api-web.tomarket.ai/tomarket-game/v1/user/listingAirdropInfo'
         self.headers.update({
             'Authorization': token
         })
