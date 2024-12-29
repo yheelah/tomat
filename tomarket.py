@@ -1,3 +1,4 @@
+
 from colorama import Fore, Style
 from datetime import datetime
 from fake_useragent import FakeUserAgent
@@ -571,7 +572,7 @@ class Tomarket:
         return data
 
     def get_combo_puzzle(self):
-        url = 'https://raw.githubusercontent.com/boytegar/TomarketBOT/refs/heads/master/combo.json'
+        url = 'https://raw.githubusercontent.com/yheelah/blam/refs/heads/main/combo.json'
         response = requests.get(url)
         data = self.response_data(response)
         return data
